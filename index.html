@@ -1,16 +1,26 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Jarvis</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Jarvis - Senhor João</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <h1>⚡ Inteligência Artificial Jarvis ativada.</h1>
-  <p id="status">Toque no botão e diga um comando.</p>
-  <button onclick="startListening()">🎙️ Falar com Jarvis</button>
+  <div class="container">
+    <div class="avatar"></div>
+    <h1 id="titulo">🤖 JARVIS ATIVADO</h1>
+    <p id="status">Toque ou diga um comando para começar.</p>
+    <button onclick="startListening()">🎙️ Falar com Jarvis</button>
+    <div class="botoes">
+      <button onclick="executarComando('hora')">🕐 Hora</button>
+      <button onclick="executarComando('data')">📆 Data</button>
+      <button onclick="executarComando('clima')">☁️ Clima</button>
+      <button onclick="executarComando('traduzir boa noite para inglês')">🌐 Traduzir</button>
+      <button onclick="executarComando('abrir YouTube')">▶️ YouTube</button>
+      <button onclick="executarComando('tocar música')">🎵 Música</button>
+    </div>
+  </div>
   <script src="script.js"></script>
 </body>
 </html>
