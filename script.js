@@ -1,85 +1,63 @@
+const synth = window.speechSynthesis;
+const recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+const ouvir = new recognition();
+ouvir.lang = 'pt-BR';
+ouvir.continuous = false;
 
-let memoria = {
-  nome: "João"
-};
+let nomeUsuario = "Senhor João";
 
 function falar(texto) {
-  const fala = new SpeechSynthesisUtterance(texto);
-  fala.lang = "pt-BR";
-  fala.pitch = 1;
-  fala.rate = 0.9;
-  fala.volume = 1;
-
-  const vozes = speechSynthesis.getVoices();
-  const vozJarvis = vozes.find(v => v.name.toLowerCase().includes("google") || v.name.toLowerCase().includes("male"));
-  if (vozJarvis) fala.voice = vozJarvis;
-
-  speechSynthesis.speak(fala);
+  const utter = new SpeechSynthesisUtterance(texto);
+  utter.lang = 'pt-BR';
+  utter.pitch = 1;
+  utter.rate = 1;
+  utter.voice = synth.getVoices().find(voice => voice.name.toLowerCase().includes('br') || voice.name.toLowerCase().includes('google'));
+  synth.speak(utter);
 }
 
 function startListening() {
-  if (!('webkitSpeechRecognition' in window)) {
-    alert("Seu navegador não suporta reconhecimento de voz");
-    return;
-  }
+  document.getElementById("status").innerText = "🎧 Ouvindo...";
+  ouvir.start();
+}
 
-  const recognition = new webkitSpeechRecognition();
-  recognition.lang = "pt-BR";
-  recognition.interimResults = false;
-  recognition.maxAlternatives = 1;
+ouvir.onresult = (event) => {
+  const comando = event.results[0][0].transcript.toLowerCase();
+  document.getElementById("status").innerText = "🧠 Comando: " + comando;
+  executarComando(comando);
+};
 
-  document.getElementById("status").textContent = "Ouvindo...";
-  recognition.start();
-
-  recognition.onresult = function(event) {
-    const comando = event.results[0][0].transcript.toLowerCase();
-    document.getElementById("status").textContent = `Você disse: "${comando}"`;
-
-    if (comando.includes("que horas são")) {
-      const hora = new Date().toLocaleTimeString("pt-BR");
-      falar("Agora são " + hora);
-
-    } else if (comando.includes("qual é a data")) {
-      const data = new Date().toLocaleDateString("pt-BR");
-      falar("Hoje é " + data);
-
-    } else if (comando.includes("meu nome é")) {
-      const nome = comando.replace("meu nome é", "").trim();
-      memoria.nome = nome;
-      falar(`Entendido, seu nome é ${nome}`);
-
-    } else if (comando.includes("qual é o meu nome")) {
-      falar(`Seu nome é ${memoria.nome}`);
-
-    } else if (comando.includes("pesquisar por")) {
-      const termo = comando.replace("pesquisar por", "").trim();
-      falar(`Pesquisando por ${termo}`);
-      window.open("https://www.google.com/search?q=" + encodeURIComponent(termo));
-
-    } else if (comando.includes("tocar música de")) {
-      const artista = comando.replace("tocar música de", "").trim();
-      falar(`Tocando músicas de ${artista} no YouTube`);
-      window.open("https://www.youtube.com/results?search_query=" + encodeURIComponent("música " + artista));
-
-    } else if (comando.includes("abrir whatsapp")) {
-      falar("Abrindo WhatsApp");
-      window.open("https://web.whatsapp.com");
-
-    } else if (comando.includes("previsão do tempo")) {
-      falar("Mostrando a previsão do tempo");
-      window.open("https://www.google.com/search?q=previsão+do+tempo");
-
-    } else {
-      falar("Desculpe, comando não reconhecido.");
+function executarComando(comando) {
+  if (comando.includes("hora")) {
+    const hora = new Date().toLocaleTimeString();
+    falar("Agora são " + hora);
+  } else if (comando.includes("data")) {
+    const data = new Date().toLocaleDateString();
+    falar("Hoje é " + data);
+  } else if (comando.includes("seu nome")) {
+    falar("Eu sou Jarvis, seu assistente pessoal.");
+  } else if (comando.includes("meu nome")) {
+    falar("Seu nome é " + nomeUsuario);
+  } else if (comando.includes("clima")) {
+    falar("Buscando previsão do tempo para Maceió");
+    window.open("https://www.google.com/search?q=clima+Maceió", "_blank");
+  } else if (comando.includes("tocar música")) {
+    falar("Tocando música no YouTube");
+    window.open("https://www.youtube.com/results?search_query=música", "_blank");
+  } else if (comando.includes("abrir youtube")) {
+    falar("Abrindo YouTube");
+    window.open("https://youtube.com", "_blank");
+  } else if (comando.includes("piada")) {
+    falar("Por que o computador foi ao médico? Porque ele estava com um vírus.");
+  } else if (comando.includes("traduzir")) {
+    const palavras = comando.split("traduzir")[1];
+    if (palavras) {
+      window.open(`https://www.google.com/search?q=traduzir ${palavras.trim()}`, "_blank");
+      falar("Aqui está a tradução de " + palavras.trim());
     }
-  };
-
-  recognition.onerror = function(event) {
-    document.getElementById("status").textContent = "Erro: " + event.error;
-    falar("Erro ao tentar escutar");
-  };
-
-  recognition.onend = function() {
-    document.getElementById("status").textContent += " - pronto para outro comando.";
-  };
+  } else if (comando.includes("desligar")) {
+    falar("Desligando... Até logo " + nomeUsuario);
+    window.close();
+  } else {
+    falar("Desculpe, não entendi o comando.");
+  }
 }
